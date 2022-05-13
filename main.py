@@ -5,13 +5,13 @@ import uvloop
 import random
 from keep_alive import keep_alive
 
-
 bot=lightbulb.BotApp(
 	os.environ["Token"],
 	default_enabled_guilds=int(os.environ["GuildID"]),
 	help_slash_command=False,
 	intents=hikari.Intents.ALL,
 )
+
 Hex = [
     0x986303, 0x986303, 0xc5428f, 0x118291, 0x89bd1e, 0xc1faca, 0xc18d36,
     0xcca0d0, 0xe16af2, 0x4ca0e5, 0x86eefd, 0xe81d97, 0xf1874c, 0xee895b,
@@ -25,6 +25,7 @@ Hex = [
     0x6ad74c, 0x468a2c, 0xb597bd, 0xbce8b7, 0x233aef, 0xb92946, 0xf9a51b,
     0x5de431, 0xfe4ff8, 0x323f44
 ]
+
 @bot.command()
 @lightbulb.option("suggestion", "What You'd Like To Suggest")
 @lightbulb.command("suggest", "Give A Suggestion To The Client")
@@ -33,25 +34,26 @@ async def cmd_suggest(ctx: lightbulb.SlashContext) -> None:
 	await ctx.respond("Suggestion Added")
 	embedded = (
 		hikari.Embed(
-			
 			description=ctx.options.suggestion,
 			colour=random.choice(Hex),
 		)
 		.set_footer(
 			text="Recte By Kanati"
 		)
-		
 		.set_author(
 			name=f"{ctx.member.username}#{ctx.member.discriminator} | {ctx.member.id}",
 			icon=ctx.author.avatar_url
 		)
 	)
-	await bot.rest.create_message(os.environ["SuggestionChannelID"], embedded)
+	rp = await bot.rest.create_message(os.environ["SuggestionChannelID"], embedded)
+	msg = await rp.message()
+	await msg.add_reaction("👍")
+	await msg.add_reaction("👎")
 
 @bot.command()
 @lightbulb.command("ping", "Check The Ping Of The Bot In Ms")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def cd_ping(ctx: lightbulb.SlashContext) -> None:
+async def cmd_ping(ctx: lightbulb.SlashContext) -> None:
 	await ctx.respond(f"My Ping Is Approximately {round(ctx.bot.heartbeat_latency * 1000)} ms.")
 
 @bot.command()
@@ -62,20 +64,22 @@ async def cmd_report(ctx: lightbulb.SlashContext) -> None:
 	await ctx.respond("Bug Reported")
 	embedded = (
 		hikari.Embed(
-			
 			description=ctx.options.suggestion,
 			colour=random.choice(Hex),
 		)
 		.set_footer(
 			text="Recte By Kanati"
 		)
-		
 		.set_author(
 			name=f"{ctx.member.username}#{ctx.member.discriminator} | {ctx.member.id}",
 			icon=ctx.author.avatar_url
 		)
 	)
 	await bot.rest.create_message(int(os.environ["BugChannelID"]), embedded)
+
+@bot.listen(hikari.StartedEvent)
+async def on_started(event):
+	print("Bot Has Been Booted Up")
 
 keep_alive()
 uvloop.install()
