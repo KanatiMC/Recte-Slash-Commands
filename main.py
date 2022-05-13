@@ -3,6 +3,7 @@ import hikari
 import lightbulb
 import uvloop
 import random
+from keep_alive import keep_alive
 
 
 bot=lightbulb.BotApp(
@@ -76,5 +77,6 @@ async def cmd_report(ctx: lightbulb.SlashContext) -> None:
 	)
 	await bot.rest.create_message(int(os.environ["BugChannelID"]), embedded)
 
+keep_alive()
 uvloop.install()
 bot.run()
