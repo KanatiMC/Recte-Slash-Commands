@@ -4,7 +4,6 @@ import lightbulb
 import uvloop
 import random
 from keep_alive import keep_alive
-
 bot=lightbulb.BotApp(
 	os.environ["Token"],
 	default_enabled_guilds=int(os.environ["GuildID"]),
@@ -57,6 +56,19 @@ async def cmd_ping(ctx: lightbulb.SlashContext) -> None:
 	await ctx.respond(f"My Ping Is Approximately {round(ctx.bot.heartbeat_latency * 1000)} ms.")
 
 @bot.command()
+@lightbulb.option("query", "What You Want To Google")
+@lightbulb.command("google", "Let Me Googe That For You")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cmd_google(ctx: lightbulb.SlashContext) -> None:
+    q = ctx.options.query
+
+    if len(q) > 500:
+        await ctx.respond("What You Want To Search Shouldn't Be More Than 500 Characters")
+        return
+
+    await ctx.respond(f"<https://google.gprivate.com/search.php?search?q={q.replace(' ', '+')}>")
+	
+@bot.command()
 @lightbulb.option("reporting", "What You'd Like To Report To Kanati")
 @lightbulb.command("report", "List A Bug In The Client")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -79,7 +91,7 @@ async def cmd_report(ctx: lightbulb.SlashContext) -> None:
 
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
-	print("Bot Has Been Booted Up")
+	print(f"Bot Has Been Booted Up")
 
 keep_alive()
 uvloop.install()
