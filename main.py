@@ -67,7 +67,31 @@ async def cmd_google(ctx: lightbulb.SlashContext) -> None:
         return
 
     await ctx.respond(f"<https://google.gprivate.com/search.php?search?q={q.replace(' ', '+')}>")
-	
+
+@bot.command()
+@lightbulb.option("question", "What Question You'd Like To Poll")
+@lightbulb.command("poll", "Creates A Poll")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cmd_poll(ctx: lightbulb.SlashContext) -> None:
+	embed = (
+		hikari.Embed(
+			description=ctx.options.suggestion,
+			colour=random.choice(Hex)
+		)
+		.set_footer(
+			text="Recte Bot By Kanati"
+		)
+		.set_author(
+			name=f"{ctx.member.username}#{ctx.member.discriminator} | {ctx.member.id}",
+			icon=ctx.author.avatar_url
+		)
+	)
+	rp = await bot.rest.create_message(int(os.environ["AnnouncementID"]), embed)
+	msg = await rp.message()
+	await msg.add_reaction('👍')
+	await msg.add_reaction('👎')
+
+
 @bot.command()
 @lightbulb.option("reporting", "What You'd Like To Report To Kanati")
 @lightbulb.command("report", "List A Bug In The Client")
@@ -88,6 +112,8 @@ async def cmd_report(ctx: lightbulb.SlashContext) -> None:
 		)
 	)
 	await bot.rest.create_message(int(os.environ["BugChannelID"]), embedded)
+
+
 
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
