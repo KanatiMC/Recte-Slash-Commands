@@ -73,9 +73,10 @@ async def cmd_google(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("poll", "Creates A Poll")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def cmd_poll(ctx: lightbulb.SlashContext) -> None:
+	await ctx.respond("Poll Created")
 	embed = (
 		hikari.Embed(
-			description=ctx.options.suggestion,
+			description=ctx.options.question,
 			colour=random.choice(Hex)
 		)
 		.set_footer(
@@ -86,10 +87,11 @@ async def cmd_poll(ctx: lightbulb.SlashContext) -> None:
 			icon=ctx.author.avatar_url
 		)
 	)
-	rp = await bot.rest.create_message(int(os.environ["AnnouncementID"]), embed)
-	msg = await rp.message()
-	await msg.add_reaction('👍')
-	await msg.add_reaction('👎')
+	rp = await bot.rest.create_message(os.environ["AnnouncementID"], embed)
+	await rp.add_reaction("👍")
+	await rp.add_reaction("👎")
+
+
 
 
 @bot.command()
